@@ -1,0 +1,42 @@
+{
+    "laender": {
+        "Argentina": "Agentinien",
+        "Australia": "Australien",
+        "Brazil": "Brasilien",
+        "Bulgaria": "Bulgarien",
+        "Canada": "Kanada",
+        "Denmark": "D\u00e4nemark",
+        "Europe": "Europa",
+        "Finland": "Finnland",
+        "France": "Frankreich",
+        "Germany": "Deutschland",
+        "Hungary": "Ungarn",
+        "Italy": "Italien",
+        "Japan": "Japan",
+        "Netherlands": "Niederlande",
+        "Poland": "Polen",
+        "Russia": "Russland",
+        "Spain": "Spanien",
+        "Sweden": "Schweden",
+        "UK": "Gro\u00dfbritannien",
+        "USA": "USA",
+        "Ukraine": "Ukraine",
+        "United States": "USA",
+        "Venezuela": "Venezuela",
+        "West Germany": "Deutschland",
+        "World-wide": "Weltweit"
+    },
+    "sprachen": {
+        "1": "deutsch",
+        "10": "niederl\u00e4ndisch",
+        "11": "norwegisch",
+        "2": "italienisch",
+        "3": "englisch",
+        "4": "franz\u00f6sisch",
+        "5": "spanisch",
+        "6": "japanisch",
+        "7": "portogiesisch",
+        "8": "russisch",
+        "9": "polnisch"
+    }
+}
