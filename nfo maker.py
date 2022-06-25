@@ -1,16 +1,18 @@
 from PyQt5 import QtWidgets, uic, QtCore,QtGui
 import os,sys,ssl,re,win32com.client,shutil,time,json
+from requests import options
 import pyperclip
 from pathlib import Path
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 
 
 import Scraping
 #import CheckableComboBox
 
-Options = Options()
+options = Options()
 GECKO=r"E:\Python\Python_WORK\geckodriver.exe"
 LAENDER_JSON_PATH = Path(__file__).absolute().parent / "JSON/laender.json"
 
@@ -487,10 +489,9 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
             WebSide="IMDb"        
         self.lbl_INTLogo.setPixmap(ink)
         QtWidgets.QApplication.processEvents()
-        Options.headless = True 
-        firefox_profile = FirefoxProfile()
-        firefox_profile.set_preference('permissions.default.image', 2)
-        driver = Firefox(options=Options,firefox_profile=firefox_profile,executable_path=GECKO)               
+        Options.headless = True        
+        options.set_preference('permissions.default.image', 2)
+        driver = Firefox(service=Service(GECKO),options=options)               
         driver.get(url)
         Titel=Scraping.Titel_Scraping(WebSide,driver)
         if Titel[len(Titel):-1].isdigit():
