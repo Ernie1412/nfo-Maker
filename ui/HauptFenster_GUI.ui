@@ -35,9 +35,6 @@
   <property name="documentMode">
    <bool>true</bool>
   </property>
-  <property name="dockOptions">
-   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging</set>
-  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_55">
     <item>
@@ -58,72 +55,10 @@
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
-          <x>910</x>
-          <y>710</y>
-          <width>92</width>
-          <height>131</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <property name="spacing">
-          <number>2</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="nfoBtn_Maker">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
-background-color:rgb(0, 85, 0)</string>
-           </property>
-           <property name="text">
-            <string>nfo Maker</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="DelBtn_DateiInfo">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
-background-color:rgb(0, 85, 0)</string>
-           </property>
-           <property name="text">
-            <string>Inhalt Löschen</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
           <x>50</x>
-          <y>90</y>
+          <y>130</y>
           <width>931</width>
-          <height>26</height>
+          <height>27</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -134,7 +69,7 @@ background-color:rgb(0, 85, 0)</string>
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
          <item>
-          <widget class="QLabel" name="lbl_Titel">
+          <widget class="QLabel" name="lblmovie_titel">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -157,7 +92,7 @@ color: rgb(0, 85, 0);</string>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="lblTitel">
+          <widget class="QLabel" name="lbl_movie_title">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
              <horstretch>190</horstretch>
@@ -240,9 +175,9 @@ background-color:rgb(0, 85, 0)</string>
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>30</y>
+          <y>100</y>
           <width>851</width>
-          <height>26</height>
+          <height>27</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_8">
@@ -253,7 +188,7 @@ background-color:rgb(0, 85, 0)</string>
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
          <item>
-          <widget class="QPushButton" name="DateiBtn_Laden">
+          <widget class="QPushButton" name="Btn_load_file">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -269,7 +204,7 @@ background-color:rgb(0, 85, 0)</string>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="lbl_Datei">
+          <widget class="QLabel" name="lbl_movie_file">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -300,7 +235,7 @@ color: rgb(255, 255, 255);</string>
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>120</y>
+          <y>170</y>
           <width>931</width>
           <height>121</height>
          </rect>
@@ -417,7 +352,7 @@ AKA</string>
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>240</y>
+          <y>290</y>
           <width>851</width>
           <height>61</height>
          </rect>
@@ -457,7 +392,7 @@ color: rgb(0, 85, 0);</string>
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>300</y>
+          <y>350</y>
           <width>931</width>
           <height>104</height>
          </rect>
@@ -474,7 +409,7 @@ color: rgb(0, 85, 0);</string>
               <enum>QLayout::SetNoConstraint</enum>
              </property>
              <item>
-              <widget class="QLabel" name="lbl_Regie">
+              <widget class="QLabel" name="lblmovie_regie">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -497,7 +432,7 @@ color: rgb(0, 85, 0);</string>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="lbl_Label">
+              <widget class="QLabel" name="lblmovie_studio">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -515,12 +450,12 @@ color: rgb(0, 85, 0);</string>
 color: rgb(0, 85, 0);</string>
                </property>
                <property name="text">
-                <string> Labe                       </string>
+                <string>Studio</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="lbl_Datum">
+              <widget class="QLabel" name="lblmovie_releasedate">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -543,7 +478,7 @@ color: rgb(0, 85, 0);</string>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="lbl_Serie">
+              <widget class="QLabel" name="lblmovie_serie">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -573,7 +508,7 @@ color: rgb(0, 85, 0);</string>
               <number>0</number>
              </property>
              <item>
-              <widget class="QLineEdit" name="lblRegie">
+              <widget class="QLineEdit" name="lbl_movie_regie">
                <property name="styleSheet">
                 <string notr="true">background-color: rgb(209, 255, 203);
 color: rgb(0, 85, 0);</string>
@@ -581,7 +516,7 @@ color: rgb(0, 85, 0);</string>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="lblLabel">
+              <widget class="QLabel" name="lbl_movie_studio">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -604,7 +539,7 @@ color: rgb(0, 85, 0);</string>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="lblDatum">
+              <widget class="QLabel" name="lbl_movie_releasedate">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>1</horstretch>
@@ -627,7 +562,7 @@ color: rgb(0, 85, 0);</string>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="lblSerie">
+              <widget class="QLabel" name="lbl_movie_serie">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                  <horstretch>1</horstretch>
@@ -685,9 +620,9 @@ Beschreibung</string>
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>400</y>
+          <y>450</y>
           <width>931</width>
-          <height>42</height>
+          <height>50</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -711,7 +646,7 @@ Laufzeit          = </string>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="CopyBtn_InfoDaten">
+          <widget class="QPushButton" name="Btn_copy_infodatas">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -739,35 +674,12 @@ background-color:rgb(0, 85, 0)</string>
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>440</y>
+          <y>510</y>
           <width>111</width>
           <height>51</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_7">
-         <item>
-          <widget class="QLabel" name="lbl_Sprache">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: rgb(85, 170, 127);
-color: rgb(0, 85, 0);</string>
-           </property>
-           <property name="text">
-            <string>Sprache:</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QLabel" name="lbl_Land">
            <property name="sizePolicy">
@@ -791,190 +703,26 @@ color: rgb(0, 85, 0);</string>
            </property>
           </widget>
          </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>50</x>
-          <y>490</y>
-          <width>931</width>
-          <height>217</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_8">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="sizeConstraint">
-            <enum>QLayout::SetFixedSize</enum>
-           </property>
-           <item>
-            <widget class="QLabel" name="lbl_Darsteller">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(85, 170, 127);
-color: rgb(0, 85, 0);</string>
-             </property>
-             <property name="text">
-              <string> Darsteller:                 </string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
-           <property name="spacing">
-            <number>1</number>
-           </property>
-           <item>
-            <widget class="QTableWidget" name="tblDarsteller">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QHeaderView::section {background-color: qlineargradient(x1: 0, y1: 1, x2:1 , y2: 0,stop: 0  #81F79F, stop: 1 white);}
-QTableWidget::item {background-color: rgb(255, 255, 255);}
-color: rgb(0, 85, 0);</string>
-             </property>
-             <property name="columnCount">
-              <number>4</number>
-             </property>
-             <attribute name="horizontalHeaderStretchLastSection">
-              <bool>true</bool>
-             </attribute>
-             <attribute name="verticalHeaderVisible">
-              <bool>false</bool>
-             </attribute>
-             <column>
-              <property name="text">
-               <string>Name</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Rollenname</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Alias</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Art</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
-             <item>
-              <widget class="QPushButton" name="CopyBtn_InfoDarsteller">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">color: rgb(255, 255, 255);
-background-color:rgb(0, 85, 0)</string>
-               </property>
-               <property name="text">
-                <string>Copy
-Darsteller</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="EditBtn_Darsteller">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">color: rgb(255, 255, 255);
-background-color:rgb(0, 85, 0)</string>
-               </property>
-               <property name="text">
-                <string>Edit
-Darsteller</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>50</x>
-          <y>710</y>
-          <width>851</width>
-          <height>131</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_6">
-         <property name="spacing">
-          <number>1</number>
-         </property>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="20">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="sizeConstraint">
-            <enum>QLayout::SetFixedSize</enum>
-           </property>
-           <item>
-            <widget class="QLabel" name="lbl_Handlung">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>13</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(85, 170, 127);
-color: rgb(0, 85, 0);</string>
-             </property>
-             <property name="text">
-              <string> Handlung:               </string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QLabel" name="lblHandlung">
+          <widget class="QLabel" name="lbl_Sprache">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
-             <verstretch>1</verstretch>
+             <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(255, 255, 255);
+            <string notr="true">background-color: rgb(85, 170, 127);
 color: rgb(0, 85, 0);</string>
            </property>
            <property name="text">
-            <string/>
+            <string>Sprache:</string>
            </property>
           </widget>
          </item>
@@ -984,9 +732,9 @@ color: rgb(0, 85, 0);</string>
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>60</y>
+          <y>70</y>
           <width>851</width>
-          <height>26</height>
+          <height>27</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_12">
@@ -997,7 +745,7 @@ color: rgb(0, 85, 0);</string>
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
          <item>
-          <widget class="QPushButton" name="DateiBtn_nfoLaden">
+          <widget class="QPushButton" name="Btn_load_nfo_file">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -1040,8 +788,339 @@ color: rgb(255, 255, 255);</string>
          </item>
         </layout>
        </widget>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>600</y>
+          <width>941</width>
+          <height>261</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="actors">
+         <attribute name="title">
+          <string>Darsteller</string>
+         </attribute>
+         <widget class="QWidget" name="layoutWidget_3">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>10</y>
+            <width>931</width>
+            <height>220</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="sizeConstraint">
+              <enum>QLayout::SetFixedSize</enum>
+             </property>
+             <item>
+              <widget class="QLabel" name="lbl_Darsteller">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(85, 170, 127);
+color: rgb(0, 85, 0);</string>
+               </property>
+               <property name="text">
+                <string> Darsteller:                 </string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <property name="spacing">
+              <number>1</number>
+             </property>
+             <item>
+              <widget class="QTableWidget" name="tblDarsteller">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QHeaderView::section {background-color: qlineargradient(x1: 0, y1: 1, x2:1 , y2: 0,stop: 0  #81F79F, stop: 1 white);}
+QTableWidget::item {background-color: rgb(255, 255, 255);}
+color: rgb(0, 85, 0);</string>
+               </property>
+               <property name="columnCount">
+                <number>4</number>
+               </property>
+               <attribute name="horizontalHeaderStretchLastSection">
+                <bool>true</bool>
+               </attribute>
+               <attribute name="verticalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
+               <column>
+                <property name="text">
+                 <string>Name</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Rollenname</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Alias</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Art</string>
+                </property>
+               </column>
+              </widget>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_5">
+               <item>
+                <widget class="QPushButton" name="CopyBtn_InfoDarsteller">
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);
+background-color:rgb(0, 85, 0)</string>
+                 </property>
+                 <property name="text">
+                  <string>Copy
+Darsteller</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="EditBtn_Darsteller">
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);
+background-color:rgb(0, 85, 0)</string>
+                 </property>
+                 <property name="text">
+                  <string>Edit
+Darsteller</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="scenen">
+         <attribute name="title">
+          <string>Handlung</string>
+         </attribute>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>821</width>
+            <height>211</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="spacing">
+            <number>1</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="20">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="sizeConstraint">
+              <enum>QLayout::SetFixedSize</enum>
+             </property>
+             <item>
+              <widget class="QLabel" name="lbl_Handlung">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>13</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(85, 170, 127);
+color: rgb(0, 85, 0);</string>
+               </property>
+               <property name="text">
+                <string> Handlung:               </string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblHandlung">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>1</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 85, 0);</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>840</x>
+            <y>10</y>
+            <width>92</width>
+            <height>131</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="DelBtn_DateiInfo">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 255, 255);
+background-color:rgb(0, 85, 0)</string>
+             </property>
+             <property name="text">
+              <string>Inhalt Löschen</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </widget>
+       <widget class="QLabel" name="lbl_INT_LinkEingabe">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>30</y>
+          <width>71</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(85, 170, 127);
+color: rgb(0, 85, 0);</string>
+        </property>
+        <property name="text">
+         <string> Link Eingabe:</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lnEdit_scrape_url">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>30</y>
+          <width>691</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 85, 0);</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="Btn_get_url_infos">
+        <property name="geometry">
+         <rect>
+          <x>870</x>
+          <y>26</y>
+          <width>110</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);
+background-color:rgb(0, 85, 0)</string>
+        </property>
+        <property name="text">
+         <string>Suchen</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="Btn_nfo_maker">
+        <property name="geometry">
+         <rect>
+          <x>890</x>
+          <y>530</y>
+          <width>90</width>
+          <height>64</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);
+background-color:rgb(0, 85, 0)</string>
+        </property>
+        <property name="text">
+         <string>nfo Maker</string>
+        </property>
+       </widget>
       </widget>
-      <widget class="QWidget" name="INTERNET">
+      <widget class="QWidget" name="internet">
        <widget class="QLabel" name="lbl_INTLogo">
         <property name="enabled">
          <bool>true</bool>
@@ -1073,7 +1152,7 @@ color: rgb(255, 255, 255);</string>
          <set>Qt::AlignCenter</set>
         </property>
        </widget>
-       <widget class="QPushButton" name="ExitBtn_INT">
+       <widget class="QPushButton" name="Btn_back">
         <property name="geometry">
          <rect>
           <x>870</x>
@@ -1093,37 +1172,6 @@ background-color:rgb(0, 85, 0)</string>
         </property>
         <property name="text">
          <string>Schließen</string>
-        </property>
-       </widget>
-       <widget class="QLineEdit" name="lnEdit_INTLinkEingabe">
-        <property name="geometry">
-         <rect>
-          <x>110</x>
-          <y>30</y>
-          <width>691</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);
-color: rgb(0, 85, 0);</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="lbl_INT_LinkEingabe">
-        <property name="geometry">
-         <rect>
-          <x>30</x>
-          <y>30</y>
-          <width>71</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(85, 170, 127);
-color: rgb(0, 85, 0);</string>
-        </property>
-        <property name="text">
-         <string> Link Eingabe:</string>
         </property>
        </widget>
        <widget class="QLabel" name="lbl_INT_Regie">
@@ -1158,28 +1206,6 @@ color: rgb(0, 85, 0);</string>
         </property>
         <property name="text">
          <string/>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="SuchBtnURL_INT">
-        <property name="geometry">
-         <rect>
-          <x>820</x>
-          <y>30</y>
-          <width>110</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);
-background-color:rgb(0, 85, 0)</string>
-        </property>
-        <property name="text">
-         <string>Suchen</string>
         </property>
        </widget>
        <widget class="QLabel" name="lbl_INT_Label">
@@ -1437,7 +1463,7 @@ color: rgb(0, 85, 0);</string>
          <string/>
         </property>
        </widget>
-       <widget class="QPushButton" name="CopyBtn_nfo_INT">
+       <widget class="QPushButton" name="Btn_set_nfo_mask">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1671,6 +1697,8 @@ color: rgb(0, 85, 0);</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource_collection_files/internet.qrc"/>
+ </resources>
  <connections/>
 </ui>

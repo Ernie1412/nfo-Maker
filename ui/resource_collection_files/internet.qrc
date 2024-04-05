@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="internet">
+    <file>internet/IAFD.jpg</file>
+    <file>internet/IMDb.png</file>
+  </qresource>
+</RCC>

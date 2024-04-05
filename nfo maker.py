@@ -1,167 +1,122 @@
-from PyQt5 import QtWidgets, uic, QtCore,QtGui
-import os,sys,ssl,re,win32com.client,shutil,time,json
-from requests import options
+from PyQt6 import uic
+from PyQt6.QtCore import Qt, QRect
+from PyQt6.QtWidgets import QMainWindow, QComboBox, QHeaderView, QHeaderView, QSizePolicy, QAbstractScrollArea, QTableWidgetItem,\
+    QApplication, QMessageBox, QFileDialog, QDialog
+from PyQt6.QtGui import QStandardItemModel, QPixmap
+
+import sys
+import re
+import win32com.client
+import shutil
+import time
+import json
+
 import pyperclip
 from pathlib import Path
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+import os
 
+from utils.scraping import Scraping
+from utils.message_show import StatusBar, status_fehler_ausgabe
 
-import Scraping
-#import CheckableComboBox
-
-options = Options()
-GECKO=r"E:\Python\Python_WORK\geckodriver.exe"
 LAENDER_JSON_PATH = Path(__file__).absolute().parent / "JSON/laender.json"
 
-##Firefox(options=Options,executable_path='E:/Python/Python379/Lib/site-packages/selenium/webdriver/firefox')
-#Firefox().quit()
-###-------------------------Option für firefox hide setzen(nicht sichtbar)---------###
-### -------------------------------------------------------------------------------###
-#
-###--------------------------Globale variable--------------------------------------###
-
-class CheckableComboBox(QtWidgets.QComboBox):
+class CheckableComboBox(QComboBox):
     def __init__(self,parent=None):
         super(CheckableComboBox, self).__init__(parent)
         self.view().pressed.connect(self.handle_item_pressed)
-        self.setModel(QtGui.QStandardItemModel(self))       
-  
-    # when any item get pressed
+        self.setModel(QStandardItemModel(self))  
+    
     def handle_item_pressed(self, index):
-  
-        # getting which item is pressed
         item = self.model().itemFromIndex(index)
-  
-        # make it check if unchecked and vice-versa
-        if item.checkState() == QtCore.Qt.Checked:
-            item.setCheckState(QtCore.Qt.Unchecked)
+        if item.checkState() == Qt.CheckState.Checked:
+            item.setCheckState(Qt.CheckState.Unchecked)
         else:
-            item.setCheckState(QtCore.Qt.Checked)
-  
-        # calling method
-        self.check_items()
-  
-    # method called by check_items
-    def item_checked(self, index):
-  
-        # getting item at index
-        item = self.model().item(index, 0)
-  
-        # return true if checked else false
-        return item.checkState() == QtCore.Qt.Checked
-  
-    # calling method
-    def check_items(self):
-        # blank list
-        checkedItems = []
-  
-        # traversing the items
+            item.setCheckState(Qt.CheckState.Checked) 
+        self.check_items()  
+    
+    def item_checked(self, index):        
+        item = self.model().item(index, 0)        
+        return item.checkState() == Qt.CheckState.Checked  
+    
+    def check_items(self):        
+        checkedItems = []  
         for i in range(self.count()):
-  
-            # if item is checked add it to the list
             if self.item_checked(i):
-                checkedItems.append(i)
-  
-        # call this method
-        self.update_labels(checkedItems)
-  
-    # method to update the label
-    def update_labels(self, item_list):
-  
+                checkedItems.append(i) 
+        self.update_labels(checkedItems)  
+    
+    def update_labels(self, item_list):  
         n = ''
-        count = 0
-  
-        # traversing the list
-        for i in item_list:
-  
-            # if count value is 0 don't add comma
+        count = 0          
+        for i in item_list: 
             if count == 0:
-                n += ' % s' % i
-            # else value is greater then 0
-            # add comma
+                n += ' % s' % i            
             else:
-                n += ', % s' % i
-  
-            # increment count
+                n += ', % s' % i  
             count += 1
-  
-  
-        # loop
         for i in range(self.count()):
-  
-            # getting label
             text_label = self.model().item(i, 0).text()
-  
-            # default state
             if text_label.find('-') >= 0:
                 text_label = text_label.split('-')[0]
-  
-            # shows the selected items
             item_new_text_label = text_label + ' - selected index: ' + n
-  
-           # setting text to combo box
-            self.setItemText(i, item_new_text_label)
-  
-    # flush    
+            self.setItemText(i, item_new_text_label) 
     sys.stdout.flush()
-###---------------------------Import der Datenbank---------------------------------###
-### -------------------------------------------------------------------------------###
+
 ###---------------------------START------------------------------------------------###
 ### -------------------------------------------------------------------------------###
-class Haupt_Fenster(QtWidgets.QMainWindow):
+class Haupt_Fenster(QMainWindow):
     def __init__(self):
         super(Haupt_Fenster, self).__init__()
         ui_file = Path(__file__).absolute().parent / "ui/HauptFenster_GUI.ui"
-        uic.loadUi(ui_file,self) 
-        self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowMaximizeButtonHint)
+        uic.loadUi(ui_file, self)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowMaximizeButtonHint)
         self.setAcceptDrops(True)
         self.tbl_INTAKA.verticalHeader().setVisible(False)
         self.tbl_INTDarsteller.verticalHeader().setVisible(False)
         self.tbl_INTHandlung.verticalHeader().setVisible(False)              
-        self.tbl_INTAKA.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        self.tbl_INTAKA.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         for i in range(2):
-            self.tbl_INTDarsteller.horizontalHeader().setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)
-        self.tbl_INTDarsteller.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
-        self.tbl_INTHandlung.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        self.Button_unsichtbar(True)
+            self.tbl_INTDarsteller.horizontalHeader().setSectionResizeMode(i, QHeaderView.ResizeMode.ResizeToContents)
+        self.tbl_INTDarsteller.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
+        self.tbl_INTHandlung.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.set_button_visible(False)
         ###---------------------------------Menu-Buttons-----------------------------------###
         ### -------------------------------------------------------------------------------### 
-        self.actionINTERNET.triggered.connect(self.INTERNET_Ausgabe) 
+        self.actionINTERNET.triggered.connect(self.internet_output) 
         self.actionInfo.triggered.connect(self.Info_Ausgabe)        
         ###-------------------------auf Klicks reagieren--------------------------------------###
+        self.Btn_get_url_infos.clicked.connect(self.get_url_infos)
         self.DelBtn_DateiInfo.clicked.connect(self.InhaltLoeschen)         
-        self.DateiBtn_Laden.clicked.connect(self.Info_Datei_Laden)
+        self.Btn_load_file.clicked.connect(self.get_file_datas_Laden)
         self.CopyBtn_InfoDatei.clicked.connect(self.CopyClipboard_InfoDatei) 
-        self.CopyBtn_InfoDaten.clicked.connect(self.CopyClipboard_InfoDaten)
+        self.Btn_copy_infodatas.clicked.connect(self.CopyClipboard_InfoDaten)
         self.CopyBtn_InfoAKA.clicked.connect(self.CopyClipboard_InfoAKA) 
         self.CopyBtn_InfoDarsteller.clicked.connect(self.CopyClipboard_InfoDarsteller)
-        self.nfoBtn_Maker.clicked.connect(self.nfoMaker)
+        self.Btn_nfo_maker.clicked.connect(self.nfo_maker)
         self.EditBtn_AKA.clicked.connect(self.Editieren)
         self.EditBtn_Darsteller.clicked.connect(self.Editieren)
-        self.DateiBtn_nfoLaden.clicked.connect(self.nfoLoad)
+        self.Btn_load_nfo_file.clicked.connect(self.nfo_file_load)
         ### --------------------------- Check ComboBox ----------------------------------------###
         self.Sprach_CheckcBox = CheckableComboBox(self.DateiInfo)
-        self.Sprach_CheckcBox.setGeometry(QtCore.QRect(170,445,261,20))
+        self.Sprach_CheckcBox.setGeometry(QRect(170,515,261,20))
         self.Land_CheckcBox = CheckableComboBox(self.DateiInfo)
-        self.Land_CheckcBox.setGeometry(QtCore.QRect(170,470,261,20))
+        self.Land_CheckcBox.setGeometry(QRect(170,540,261,20))
         daten=[]
         with open(LAENDER_JSON_PATH, 'r') as f:
             daten=json.load(f)
-        laender=daten["laender"];sprache=daten["sprachen"]
+        laender = daten["laender"]
+        sprache = daten["sprachen"]
         for num,sprach_ger in enumerate(sprache.keys()):
             self.Sprach_CheckcBox.addItem(sprache[sprach_ger])
             item = self.Sprach_CheckcBox.model().item(num, 0)
-            item.setCheckState(QtCore.Qt.Unchecked)
+            item.setCheckState(Qt.CheckState.Unchecked)
         self.Sprach_CheckcBox.setStyleSheet("QComboBox {color: rgb(0, 85, 0);background-color: white}")
         self.Sprach_CheckcBox.view().setStyleSheet("QComboBox, QComboBox QAbstractItemView {color: rgb(0, 85, 0);background-color: white}")  
         for num,land_ger in enumerate(laender.keys()):
             # adding item
             self.Land_CheckcBox.addItem(laender[land_ger])            
             item = self.Land_CheckcBox.model().item(num, 0)
-            item.setCheckState(QtCore.Qt.Unchecked)                        
+            item.setCheckState(Qt.CheckState.Unchecked)                        
         self.Land_CheckcBox.setStyleSheet("QComboBox {color: rgb(0, 85, 0);background-color: white}")
         self.Land_CheckcBox.view().setStyleSheet("QComboBox QAbstractItemView {color: rgb(0, 85, 0);background-color: white}")             
 
@@ -182,35 +137,32 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
                 print('bye')
                 return
             filename = filename.replace('file:///', '')
-            self.lbl_Datei.setText(filename)             
-            self.DateiLaden(filename)
+            self.lbl_movie_file.setText(filename)             
+            self.files_load(filename)
 
     # Info-Fenster Ausgabe und schließen
     def Info_Ausgabe(self):
-        sender = self.sender()
-        print(sender.objectName())                       
-        #Fenster Anzeige
-        self.InfoW=uic.loadUi(os.path.join(Path(__file__).absolute().parent / 'ui/Info.ui'))        
-        self.InfoW.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.WindowStaysOnTopHint| 
-                              QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)        
-        self.InfoW.OKBtn.clicked.connect(self.Klick)
-        self.InfoW.exec_()        
-    def Klick(self):        
-        self.InfoW.hide()
+        sender = self.sender()        
+        self.InfoW=uic.loadUi(Path(__file__).absolute().parent / 'ui/Info.ui')        
+        self.InfoW.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowStaysOnTopHint| 
+                              Qt.WindowType.CustomizeWindowHint | Qt.WindowType.WindowTitleHint)        
+        self.InfoW.OKBtn.clicked.connect(self.InfoW.hide)
+        self.InfoW.exec()      
+    
     ###---------------------------------Titel Auswahl-----------------------------------------###
-    def zwei_auswahl(self,alt,neu,Titel):                           
-        #Fenster Anzeige
+    def zwei_auswahl(self,alt,neu,Titel): 
         self.TitelAuswahlW=uic.loadUi(Path(__file__).absolute().parent / 'ui/Titel_Name_Auswahl.ui')        
-        self.TitelAuswahlW.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.WindowStaysOnTopHint| 
-                              QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)       
+        self.TitelAuswahlW.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowStaysOnTopHint| 
+                              Qt.WindowType.CustomizeWindowHint | Qt.WindowType.WindowTitleHint)       
         self.TitelAuswahlW.show()
         self.ergebnis = ""
         self.TitelAuswahlW.gBox.setTitle("Welchen <b>"+Titel+"</b> behalten ?")
         self.TitelAuswahlW.rBtnName_alt.setText(alt)
         self.TitelAuswahlW.rBtnName_neu.setText(neu)
         self.TitelAuswahlW.OKBtnAuswahl.clicked.connect(self.auswahl)
-        self.TitelAuswahlW.exec_()
-        return self.ergebnis      
+        self.TitelAuswahlW.exec()
+        return self.ergebnis  
+        
     def auswahl(self):        
         if self.TitelAuswahlW.rBtnName_neu.isChecked:
             self.ergebnis=self.TitelAuswahlW.rBtnName_neu.text()
@@ -221,8 +173,7 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
 
     ###----------------------------- Tabelle Edit --------------------------------------------------###
     def Editieren(self):
-        sender = self.sender()
-        print(sender.objectName())
+        sender = self.sender()        
         if sender.objectName()=="EditBtn_AKA":
             self.EditierW=uic.loadUi(Path(__file__).absolute().parent / 'ui/AKAEdit.ui')
             SpaltenMax=3
@@ -243,23 +194,23 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
             self.DatenInfo=self.tblDarsteller
             Edit_Count=self.tblDarsteller.rowCount()
         #Fenster Anzeige                
-        self.EditierW.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.WindowStaysOnTopHint| 
-                              QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
-        self.Edit.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        self.Edit.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        self.Edit.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        self.Edit.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.Edit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)                                      
+        self.EditierW.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowStaysOnTopHint| 
+                              Qt.WindowType.CustomizeWindowHint | Qt.WindowType.WindowTitleHint)
+        self.Edit.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        self.Edit.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+        self.Edit.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.Edit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.Edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)                                      
         self.EditierW.setMaximumHeight(165+Edit_Count*30) 
         self.Edit.setRowCount(Edit_Count)
         for spalte in range(SpaltenMax):           
             for zeile in range(Edit_Count):
-                self.Edit.setItem(zeile, spalte,QtWidgets.QTableWidgetItem(self.DatenInfo.item(zeile,spalte).text()))                
+                self.Edit.setItem(zeile, spalte,QTableWidgetItem(self.DatenInfo.item(zeile,spalte).text()))                
         self.Fertig.clicked.connect(self.Editier_Fertig)
         if SpaltenMax==3:self.EditierW.TaddBtn_AKAEdit.clicked.connect(self.Titel_adden)
         self.Zdel.clicked.connect(self.Zeile_loeschen)
         self.Zadd.clicked.connect(self.Zeile_adden)
-        self.EditierW.exec_()
+        self.EditierW.exec()
     ###-----------------------------editierte Tabelle in Daten Tabelle wieder einfügen ----------------------------------------###
     def Editier_Fertig(self):
         try:            
@@ -274,12 +225,12 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
         self.DatenInfo.setRowCount(ZeileCount)
         for spalte in range(SpaltenMax):                                  
             for zeile in range(ZeileCount):                
-                self.DatenInfo.setItem(zeile, spalte,QtWidgets.QTableWidgetItem(self.Edit.item(zeile,spalte).text()))
+                self.DatenInfo.setItem(zeile, spalte,QTableWidgetItem(self.Edit.item(zeile,spalte).text()))
                 print("%s / %s" % (spalte,zeile))
         self.EditierW.hide()
     ###-----------------------------Titel in Tabelle einfügen -----------------------------------------------------------------###
     def Titel_adden(self):
-        Titel=self.lblTitel.text();isvorhanden=0
+        Titel=self.lbl_movie_title.text();isvorhanden=0
         AKA_Count=self.EditierW.tbl_AKAEdit.rowCount()       
         for zeile in range(AKA_Count):            
             if self.EditierW.tbl_AKAEdit.item(zeile,0).text()== Titel:
@@ -290,9 +241,9 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
             self.EditierW.tbl_AKAEdit.setRowCount(AKA_Count)
             self.EditierW.setMinimumHeight(165+AKA_Count*30)
             self.EditierW.resize(self.EditierW.width(),155+AKA_Count*32)
-            self.EditierW.tbl_AKAEdit.setItem(AKA_Count-1,0,QtWidgets.QTableWidgetItem(Titel))
-            self.EditierW.tbl_AKAEdit.setItem(AKA_Count-1,1,QtWidgets.QTableWidgetItem("Haupttitel"))
-            self.EditierW.tbl_AKAEdit.setItem(AKA_Count-1,2,QtWidgets.QTableWidgetItem(""))
+            self.EditierW.tbl_AKAEdit.setItem(AKA_Count-1,0,QTableWidgetItem(Titel))
+            self.EditierW.tbl_AKAEdit.setItem(AKA_Count-1,1,QTableWidgetItem("Haupttitel"))
+            self.EditierW.tbl_AKAEdit.setItem(AKA_Count-1,2,QTableWidgetItem(""))
             self.EditierW.lblStatus.setStyleSheet("QLabel { color: green }")
             self.EditierW.lblStatus.setText("%s ist addet" % (Titel))
         else:
@@ -318,7 +269,7 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
             self.EditierW.setMinimumHeight(165+AKA_Count*30)
             self.EditierW.resize(self.EditierW.width(),165+AKA_Count*30)
             for spalte in range(SpaltenMax):
-                self.Edit.setItem(AKA_Count-1,spalte,QtWidgets.QTableWidgetItem(""))
+                self.Edit.setItem(AKA_Count-1,spalte,QTableWidgetItem(""))
             self.EditierW.lblStatus.setStyleSheet("QLabel { color: green }")
             self.EditierW.lblStatus.setText("Eine Zeile ist addet")
         else:
@@ -345,25 +296,31 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
                 Titel=self.Edit.item(zeile,0).text()
                 self.Edit.removeRow(zeile)   
                 self.EditierW.lblStatus.setStyleSheet("QLabel { color: green }")
-                self.EditierW.lblStatus.setText("Zeile %s mit dem Titel: ""%s"" ist gelöscht" % (zeile+1,Titel))
+                self.EditierW.lblStatus.setText(f"Zeile {zeile+1} mit dem Titel: {Titel} ist gelöscht")
                 self.EditierW.setMinimumHeight(165+AKA_Count*30)
                 self.EditierW.resize(self.EditierW.width(),165+AKA_Count*30)
-                QtWidgets.QApplication.processEvents()
+                QApplication.processEvents()
                 time.sleep(4)
 
     ###-----------------------------Darsteller Edit -------------------------------------------###  
     def InhaltLoeschen(self):
-        self.lbl_Datei.setText("")
-        self.lblTitel.setText("")
-        self.lblLabel.setText("Regie             =\nLabel             =\nSerie             =\nErscheinungsdatum = ")
-        self.lblnfoDaten.setText("Format		  =\nResize		  = \nLaufzeit          = ")   
+        self.lbl_movie_file.setText("")
+        self.lbl_movie_title.setText("")
+        self.lbl_movie_studio.setText(f"{'Regie':18} =\n" \
+                              f"{'Studio':18}=\n" \
+                              f"{'Serie':18}=\n" \
+                              f"{'Erscheinungsdatum':18}= " )
+        self.lblnfoDaten.setText(f"{'Format':18}=\n" \
+                                 f"{'Resize':18}= \n" \
+                                 f"{'Laufzeit':18}= "   )   
         self.tblAKA.setRowCount(0)
         self.lblLinks.setText("")
         self.tblDarsteller.setRowCount(0)
         self.lblHandlung.setText("")
-        self.Button_unsichtbar(True)
-    def clear_INTFenster(self):
-        self.lnEdit_INTLinkEingabe.setText("")
+        self.set_button_visible(False)
+
+    def clear_website_window(self):
+        self.lnEdit_scrape_url.setText("")
         self.lbl_INTName.setText("")        
         self.lbl_INTRegie.setText("")
         self.lbl_INTSprache.setText("")
@@ -375,9 +332,9 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
         self.tbl_INTDarsteller.setRowCount(0)
         self.tbl_INTHandlung.setRowCount(0)
     def MsgBox(self,Daten,art):
-        mBox = QtWidgets.QMessageBox()
+        mBox = QMessageBox()
         if art=='w':                   
-            QtWidgets.QMessageBox.warning(mBox, 'Fataler Fehler',
+            QMessageBox.warning(mBox, 'Fataler Fehler',
                 """<font color='black'>
                 <style><background-color='yellow'>
                 <h1 text-align: center></style>
@@ -385,10 +342,10 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
                 <img src='./images/sign-error-icon.png' alt='ERROR'></img>
                 <p><font-size: 20px><b>{0}</b></p></body>""".format(Daten))
         if art=='q':  
-            reply=QtWidgets.QMessageBox.question(mBox, 'Fataler Fehler',
-                """<h1>Bist du Sicher ?</h1>""",QtWidgets.QMessageBox.Yes,QtWidgets.QMessageBox.No)
+            reply=QMessageBox.question(mBox, 'Fataler Fehler',
+                """<h1>Bist du Sicher ?</h1>""",QMessageBox.Yes,QMessageBox.No)
         if art=="i":
-            QtWidgets.QMessageBox.information(mBox, 'Bitte warten !',
+            QMessageBox.information(mBox, 'Bitte warten !',
                 """<font color='black'>
                 <style><background-color='green'>
                 <h1 text-align: center></style>
@@ -397,319 +354,423 @@ class Haupt_Fenster(QtWidgets.QMainWindow):
                 <p><font-size: 20px><b>{0}</b></p></body>""".format(Daten)) 
         return reply
 
-    def Info_Datei(self,art):            
-        dialog = QtWidgets.QFileDialog(self,"Ordner öffnen")
-        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptOpen)
-        dialog.setDirectory("D:\\")
-        dialog.setFileMode(QtWidgets.QFileDialog.ExistingFile)
-        if art=="Video":dialog.setNameFilter("Movie Daten (*.mp4 *.avi *wmv)")
-        if art=="nfo":dialog.setNameFilter("nfo Daten (*.txt)")        
-        dialog.setViewMode(QtWidgets.QFileDialog.Detail)
-        if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            return dialog.selectedFiles()[0]           
-            
+    def get_file_datas(self, art):            
+        dialog = QFileDialog(self,"Ordner öffnen")        
+        dialog.setDirectory("D:\\")        
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        if art == "Video":
+            dialog.setNameFilter("Movie Daten (*.mp4 *.avi *wmv)")
+        if art == "nfo":
+            dialog.setNameFilter("nfo Daten (*.txt)")        
+        dialog.setViewMode(QFileDialog.ViewMode.Detail)
+        if dialog.exec() == QDialog.DialogCode.Accepted:            
+            return dialog.selectedFiles()[0] 
 
-    def DateiLaden(self,filename):
-        if filename is not None:                    
-            self.lbl_Datei.setText(filename) 
-            filename=filename.replace("/","\\")           
-            TheShell = win32com.client.gencache.EnsureDispatch('Shell.Application',0)
-            AFolder = TheShell.NameSpace(os.path.dirname(filename))
-            AFile = AFolder.ParseName(os.path.basename(filename))                             
-            Groesse=re.sub(r"\s+", "",AFolder.GetDetailsOf(AFile,1))
-            file=AFolder.GetDetailsOf(AFile,165)[0:-4] 
-            striche=("-"*len(file))
-            ms_codec=AFolder.GetDetailsOf(AFile,311)
-            codecs={"{34363248-0000-0010-8000-00AA00389B71}":"H.264",
-                    "{5634504D-0000-0010-8000-00AA00389B71}":"MPEG-4 Part 2",
-                    "{3253344D-0000-0010-8000-00AA00389B71}":"MPEG-4 Advanced Simple Profile",
-                    "{32564D57-0000-0010-8000-00AA00389B71}":"Windows Media Video 8",
-                    "{3334504D-0000-0010-8000-00AA00389B71}":"Microsoft MPEG-4 version 3",    
-                    }
-            CodecVersion=codecs.get(ms_codec)
-            if CodecVersion==None:
-                Breite="000";Hoehe="000";Bitrate="0";Dauer="00:00:00";Brate="00.00";Format="Unbekannt";CodecVersion="Unbekannt"
-            else:     
-                Breite=AFolder.GetDetailsOf(AFile,316)
-                Hoehe=AFolder.GetDetailsOf(AFile,314)
-                Bitrate=str(AFolder.GetDetailsOf(AFile,313).replace('kBit/s','').replace("\u200e","").strip())
-                Dauer=AFolder.GetDetailsOf(AFile,27)
-                Brate=str(AFolder.GetDetailsOf(AFile,315).replace(' Bilder/Sekunde','').replace("\u200e",""))        
-                if int(Hoehe)>=720 and int(Hoehe)<1080:
-                    Format="HD 720p"
-                elif int(Hoehe)<720:
-                    Format="DVD"
-                else: Format="FULLHD 1080p"  
-            inhalt=("Format            = "+Format+
-                    " \nResize		  = "+Groesse+" - "+Bitrate+"kb/s ("+str(Breite)+" x "+str(Hoehe)+" / "+Brate+"f) "+CodecVersion+
-                    "\nLaufzeit          = "+Dauer)         
-            self.lblTitel.setText(file+"\n"+striche)
-            self.lblnfoDaten.setText(inhalt)         
-            pyperclip.copy(inhalt)
+    def get_file_details(self, filename):
+        folder_path = Path(filename).parent
+        file_name = Path(filename).name
+        
+        windows_COM = win32com.client.gencache.EnsureDispatch('Shell.Application', 0)
+        win_folder = windows_COM.NameSpace(str(folder_path))
+        win_file = win_folder.ParseName(file_name)
+        return win_folder, win_file
+
+    def get_video_codec(self, ms_codec):
+        codecs = {
+            "{34363248-0000-0010-8000-00AA00389B71}": "H.264",
+            "{5634504D-0000-0010-8000-00AA00389B71}": "MPEG-4 Part 2",
+            "{3253344D-0000-0010-8000-00AA00389B71}": "MPEG-4 Advanced Simple Profile",
+            "{32564D57-0000-0010-8000-00AA00389B71}": "Windows Media Video 8",
+            "{3334504D-0000-0010-8000-00AA00389B71}": "Microsoft MPEG-4 version 3",
+        }
+        return codecs.get(ms_codec, "Unbekannt")
+
+    def get_video_properties(self, win_folder, win_file):
+        video_breite = win_folder.GetDetailsOf(win_file, 316)
+        video_hoehe = win_folder.GetDetailsOf(win_file, 314)
+        bitrate = win_folder.GetDetailsOf(win_file, 313).replace('kBit/s', '').replace("\u200e", "").strip()
+        runtime = win_folder.GetDetailsOf(win_file, 27)
+        frame_rate = win_folder.GetDetailsOf(win_file, 315).replace(' Bilder/Sekunde', '').replace("\u200e", "")
+        return video_breite, video_hoehe, bitrate, runtime, frame_rate
+
+    def get_format_resolution(self, height):
+        height = int(height) if height else 0   
+        if height < 720 and height >= 300:
+            return "DVD"
+        elif height < 1080:
+            return "HD 720p"
+        else:
+            return "FULLHD 1080p"
+
+    def build_content_format(self, file_size, video_breite, video_hoehe, bitrate, frame_rate, codec_version):        
+        video_format = self.get_format_resolution(video_hoehe)
+        content = (
+            f"{'Format':18}= {video_format}\n"
+            f"{'Resize':18}= {file_size} - {bitrate}kb/s ({video_breite} x {video_hoehe} / {frame_rate}f) {codec_version}\n"
+        )
+        return content
+
+    def files_load(self, filename):
+        self.Btn_copy_infodatas.setVisible(True)
+        if filename is None:
+            inhalt = f"{'Format':18}= FULLHD 1080p\n" \
+                     f"{'Resize':18}=\n" \
+                     f"{'Laufzeit':18}=" 
+            self.lblnfoDaten.setText(inhalt)
+        else:
+            self.lbl_movie_file.setText(filename)
+            filename = filename.replace("/", "\\")
+            win_folder, win_file = self.get_file_details(filename)
+            file_size = re.sub(r"\s+", "", win_folder.GetDetailsOf(win_file, 1))
+            file = win_folder.GetDetailsOf(win_file, 165)[0:-4]            
+            ms_codec = win_folder.GetDetailsOf(win_file, 311)
+            codec_version = self.get_video_codec(ms_codec)
+
+            if codec_version is None:
+                video_breite, video_hoehe, bitrate, runtime, frame_rate, format, codec_version = ["000"] * 7
+            else:
+                video_breite, video_hoehe, bitrate, runtime, frame_rate = self.get_video_properties(win_folder, win_file)
+                Format = self.get_format_resolution(video_hoehe)
+
+            inhalt = self.build_content_format(file_size, video_breite, video_hoehe, bitrate, frame_rate, codec_version) + \
+                    f"{'Laufzeit':18}= {runtime}"
+
+            self.lbl_movie_title.setText(file)
+            self.lblnfoDaten.setText(inhalt)
+
+        pyperclip.copy(inhalt)
+
         
 
     ###----------------- zurück zum Hauptmenu per Button --------------------------------###
     ###----------------------------------------------------------------------------------###
-    def Zurueck(self):
+    def stacked_back(self):
         ###-------------------------Fenster Anzeigen.-----------------------------------------###
         ### ----------------------------------------------------------------------------------###
         self.stackedWidget.setCurrentIndex(0)
-        self.Button_unsichtbar(True)
+        self.set_button_visible(False)
 
-    def INTERNET_Ausgabe(self):
+    def internet_output(self):
         ###-------------------------Fenster Anzeigen.-----------------------------------------###
         ### ----------------------------------------------------------------------------------###
-        self.stackedWidget.setCurrentWidget(self.INTERNET)
-        self.CopyBtn_nfo_INT.setHidden(True) 
+        self.stackedWidget.setCurrentWidget(self.internet)
+        self.Btn_set_nfo_mask.setHidden(True) 
         ###-------------------------auf Klicks reagieren--------------------------------------###
-        self.ExitBtn_INT.clicked.connect(self.Zurueck)
-        self.SuchBtnURL_INT.clicked.connect(self.Internet_Laden)
-        self.CopyBtn_nfo_INT.clicked.connect(self.Copynfo)
+        self.Btn_back.clicked.connect(self.stacked_back)
+        self.Btn_set_nfo_mask.clicked.connect(self.set_nfo_mask)        
         
-    def Button_unsichtbar(self,Status):
-        if self.lblTitel.text()=="":Status=True
-        self.CopyBtn_InfoDatei.setHidden(Status)
-        self.EditBtn_AKA.setHidden(Status)
-        self.CopyBtn_InfoAKA.setHidden(Status)
-        self.CopyBtn_InfoDaten.setHidden(Status)
-        self.CopyBtn_InfoDarsteller.setHidden(Status)
-        self.EditBtn_Darsteller.setHidden(Status)
-        self.nfoBtn_Maker.setHidden(Status)
+    def set_button_visible(self,Status):        
+        self.CopyBtn_InfoDatei.setVisible(Status)
+        self.EditBtn_AKA.setVisible(Status)
+        self.CopyBtn_InfoAKA.setVisible(Status)
+        self.Btn_copy_infodatas.setVisible(Status)
+        self.CopyBtn_InfoDarsteller.setVisible(Status)
+        self.EditBtn_Darsteller.setVisible(Status)
+        self.Btn_nfo_maker.setVisible(Status)
 
-    def Internet_Laden(self):
-        ink=""
-        self.SuchBtnURL_INT.setEnabled(False)
-        self.ExitBtn_INT.setEnabled(False)
-        url=self.lnEdit_INTLinkEingabe.text()
-        if "iafd.com" in url[:20]:
-            ink = QtGui.QPixmap(str(Path(__file__).absolute().parent / "images/IAFD.png"))            
-            WebSide="IAFD"
-        if "imdb.com" in url[:20]:
-            ink = QtGui.QPixmap(str(Path(__file__).absolute().parent / "images/IMDb.png"))
-            WebSide="IMDb"        
-        self.lbl_INTLogo.setPixmap(ink)
-        QtWidgets.QApplication.processEvents()
-        Options.headless = True        
-        options.set_preference('permissions.default.image', 2)
-        driver = Firefox(service=Service(GECKO),options=options)               
-        driver.get(url)
-        Titel=Scraping.Titel_Scraping(WebSide,driver)
-        if Titel[len(Titel):-1].isdigit():
-            Serie=Titel[:Titel[:-1].rfind(" ")]  
-        self.lbl_INTName.setText(Titel)
+    def get_url_infos(self):
+        img_path: str=""
+        self.set_buttons_enabled(False)
+        url = self.lnEdit_scrape_url.text() 
+
+        if url.startswith("https://www.iafd.com"):
+            img_path = ":/internet/internet/IAFD.jpg"            
+            website="IAFD"
+        elif url.startswith("https://www.imdb.com/title/"):
+            img_path = ":/internet/internet/images/IMDb.png"
+            website="IMDb" 
+        else:
+            return 
+        self.internet_output()
+        content = Scraping().open_url(url)      
+        self.lbl_INTLogo.setPixmap(QPixmap(img_path))
+        QApplication.processEvents()
+        ### --------------------------------- Titel                     ------------------------------------- ###
+        title, serie = Scraping().get_movie_title(website, content)          
+        self.lbl_INTName.setText(title)
         ### --------------------------------- Regie                     ------------------------------------- ###
-        Regie=Scraping.Regie_Scraping(WebSide,driver)
+        Regie=Scraping().get_regie(website, content)
         self.lbl_INTRegie.setText(Regie)
         ### --------------------------------- Land                      ------------------------------------- ###
-        Land=Scraping.Land_Scraping(WebSide,driver) 
+        Land=Scraping().get_country(website, content) 
         self.lbl_INTLand.setText(Land)
         ### --------------------------------- Label und Distributor     ------------------------------------- ###             
-        Distributor=Scraping.Label_Scraping(WebSide,driver)
+        Distributor=Scraping().get_label(website, content)
         self.lbl_INTLabel.setText(Distributor)
         ### --------------------------------- Release-Datum -------------------------------------------------- ### 
-        ReleaseDate=Scraping.ReleaseDatum_Scraping(WebSide,driver)
+        ReleaseDate=Scraping().get_releasedate(website, content)
         with open(Path(__file__).absolute().parent / "JSON/url.json", 'r') as f:
             infos=json.load(f)  
-        self.lbl_INTDatum.setText(infos["Datum"])
+        self.lbl_INTDatum.setText(ReleaseDate)
         ### --------------------------------- AKA in eine Tabelle laden -------------------------------------- ###        
         ###--------------------------------------------------------------------------------------------------- ### 
         if "imdb.com" in url[:20]:
-            driver.get(infos["akaLink"])            
-        Also_Known_As=Scraping.AKA_Scraping(WebSide,driver)
-        if Also_Known_As=="":self.statusBar.showMessage("AKA: Keine Daten !",2000)                        
-        self.tbl_INTAKA.setRowCount(len(Also_Known_As))
-        for spalte in range(len(Also_Known_As)):
-            for reihe,AKA_single in enumerate(Also_Known_As[spalte]):            
-                self.tbl_INTAKA.setItem(spalte,reihe, QtWidgets.QTableWidgetItem(AKA_single))
+            content = Scraping().open_url(infos["akaLink"])            
+        also_known_as_all = Scraping().get_aka(website, content)
+        if not also_known_as_all:
+            status_fehler_ausgabe(self, "AKA: Keine Daten !")                        
+        self.tbl_INTAKA.setRowCount(len(also_known_as_all))
+        for row, also_known_as in enumerate(also_known_as_all):                        
+            self.tbl_INTAKA.setItem(row, 0, QTableWidgetItem(str(also_known_as[0])))
+            self.tbl_INTAKA.setItem(row, 1, QTableWidgetItem(str(also_known_as[1])))
+            self.tbl_INTAKA.setItem(row, 2, QTableWidgetItem(str(also_known_as[2])))
         ### --------------------------------- Szenen in eine Tabelle packen ----------------------------------- ###
-        Szenen=Scraping.Szenen_Scraping(WebSide,driver)
-        self.tbl_INTHandlung.setRowCount(len(Szenen))
-        for spalte in range(len(Szenen)):
-            for reihe,Szene in enumerate(Szenen[spalte]):
-                self.tbl_INTHandlung.setItem(spalte, reihe, QtWidgets.QTableWidgetItem(Szene)) 
+        scenen = Scraping().get_scenen(website, content)
+        self.tbl_INTHandlung.setRowCount(len(scenen))
+        for row, scene in enumerate(scenen):
+            self.tbl_INTHandlung.setItem(row, 0, QTableWidgetItem(f"{scene['nr']}"))
+            self.tbl_INTHandlung.setItem(row, 3, QTableWidgetItem(f"{scene['name']}"))
         ### --------------------------------- Darsteller in eine Tabelle packen-------------------------------- ###
         if "imdb.com" in url[:20] and infos.get("DarstellerLink")!="":
-            driver.get(infos["DarstellerLink"])    
-        Performer=Scraping.Darsteller_Scraping(WebSide,driver)                        
-        self.tbl_INTDarsteller.setRowCount(len(Performer))
-        for spalte in range(len(Performer)):
-            for reihe,Performer_single in enumerate(Performer[spalte]):            
-                self.tbl_INTDarsteller.setItem(spalte,reihe, QtWidgets.QTableWidgetItem(Performer_single))        
-        ### --------------------------------------------------------------------------------------------------- ###    
-        driver.quit()
-        self.CopyBtn_nfo_INT.setHidden(False)
-        self.SuchBtnURL_INT.setEnabled(True)
-        self.ExitBtn_INT.setEnabled(True)
+            content = Scraping().open_url(infos["DarstellerLink"])    
+        artists = Scraping().get_performers(website, content)                        
+        self.tbl_INTDarsteller.setRowCount(len(artists))
+        for reihe, item in enumerate(artists):                   
+            self.tbl_INTDarsteller.setItem(reihe, 0, QTableWidgetItem(item.get('name', '')))
+            self.tbl_INTDarsteller.setItem(reihe, 1, QTableWidgetItem(item.get('alias', ''))) 
+            self.tbl_INTDarsteller.setItem(reihe, 2, QTableWidgetItem(item.get('skill', ''))) 
+        ### --------------------------------------------------------------------------------------------------- ### 
+        self.Btn_set_nfo_mask.setHidden(False)
+        self.set_buttons_enabled(True)
 
-    def Copynfo(self):
+    def set_buttons_enabled(self, status: bool):
+        self.Btn_get_url_infos.setEnabled(status)
+        self.Btn_back.setEnabled(status)
+        
+    def set_nfo_mask(self):
+        if self.lnEdit_scrape_url.text().startswith("https://www.iafd.com"):
+            self.InhaltLoeschen()
+        serie: str=""
         ### -------------------------------Titel ------------------------------------------------------ ### 
-        print(self.lblLinks.text().find(self.lnEdit_INTLinkEingabe.text()))       
-        if self.lblLinks.text().find(self.lnEdit_INTLinkEingabe.text())>17:
-            self.stackedWidget.setCurrentIndex(0)
-            self.clear_INTFenster()        
-            self.Button_unsichtbar(False)            
-        alt=self.lblTitel.text()
-        neu=self.lbl_INTName.text()
-        ergebnis=neu;serie=""
-        if alt!=neu and alt!="":          
-            ergebnis=self.zwei_auswahl(alt,neu,"Titel")                         
-        self.lblTitel.setText(ergebnis)     
+        ergebnis = self.set_title()     
         ### ------------------------------- Anhand des Titel prüfen ob Serie -------------------------- ###        
         if ergebnis[len(ergebnis):-1].isdigit():
-            serie=ergebnis=[ergebnis[:-1].rfind(" ")]
-        ### ------------------------------- Datum, Label und Co --------------------------------------- ###        
-        if self.lblRegie.text()=="":
-            self.lblRegie.setText(self.lbl_INTRegie.text())
-        else:
-            alt=self.lblRegie.text()
-            neu=self.lbl_INTRegie.text();ergebnis=neu
-            if alt!=neu and alt!="":          
-                ergebnis=self.zwei_auswahl(alt,neu,"Regiename")                            
-        self.lblTitel.setText(ergebnis) 
-        if self.lblLabel.text()=="":
-            self.lblLabel.setText(self.lbl_INTLabel.text())
-        else:
-            alt=self.lblLabel.text()
-            neu=self.lbl_INTLabel.text();ergebnis=neu
-            if alt!=neu and alt!="":          
-                ergebnis=self.zwei_auswahl(alt,neu,"Studioname")                       
-        self.lblTitel.setText(ergebnis)
-        if self.lblDatum.text()=="":
-            self.lblDatum.setText(self.lbl_INTDatum.text())
-        else:
-            alt=self.lblDatum.text()
-            neu=self.lbl_INTDatum.text();ergebnis=neu
-            if alt!=neu and alt!="":          
-                ergebnis=self.zwei_auswahl(alt,neu,"Datum")                   
-        self.lblTitel.setText(ergebnis)
-        if self.lblSerie.text()=="":
-            self.lblSerie.setText(serie)
-        for num in range(len(self.Land_CheckcBox)):            
-            if self.Land_CheckcBox.model().item(num, 0).text()==self.lbl_INTLand.text():
-                item = self.Land_CheckcBox.model().item(num, 0)
-                item.setCheckState(QtCore.Qt.Checked)                
+            serie = [ergebnis[:-1].rfind(" ")]
+        ### ------------------------------- Regie --------------------------------------- ###        
+        ergebnis = self.set_regie()                                    
+        self.lbl_movie_regie.setText(ergebnis)
+        ### ------------------------------- Studio --------------------------------------- ###
+        ergebnis = self.set_studio()                      
+        self.lbl_movie_studio.setText(ergebnis)
+        ### ------------------------------- Release Datum --------------------------------------- ###
+        ergebnis = self.set_release_date()                   
+        self.lbl_movie_releasedate.setText(ergebnis)
+        if not self.lbl_movie_serie.text():
+            self.lbl_movie_serie.setText(serie)
+        self.set_country()                
           ### ------------------------------- Tabelle AKA --------------------------------------------- ###                    
-        tblAKA={};tblINTAKA={}
-        for reihe in range(self.tblAKA.rowCount()):
-            tblAKA.update({self.tblAKA.item(reihe, 0).text():(self.tblAKA.item(reihe, 1).text(),self.tblAKA.item(reihe, 2).text())})
-        for reihe in range(self.tbl_INTAKA.rowCount()):            
-            tblINTAKA.update({self.tbl_INTAKA.item(reihe, 0).text():(self.tbl_INTAKA.item(reihe, 1).text(),self.tbl_INTAKA.item(reihe, 2).text())})
-        for name, art_land in tblINTAKA.items():
-            if name not in tblAKA:
-                neue_Zeile=self.tblAKA.rowCount()+1
-                self.tblAKA.setRowCount(neue_Zeile)
-                self.tblAKA.setItem(neue_Zeile-1, 0,QtWidgets.QTableWidgetItem(name))                               
-                self.tblAKA.setItem(neue_Zeile-1, 1,QtWidgets.QTableWidgetItem(art_land[0]))
-                self.tblAKA.setItem(neue_Zeile-1, 2,QtWidgets.QTableWidgetItem(art_land[1]))                
+        self.set_also_known_as()                        
         ### ------------------------------- Tabelle Darsteller ---------------------------------------- ###                
-        tblDarstel={};tblINTDarstel={}
-        for reihe in range(self.tblDarsteller.rowCount()):
-            tblDarstel.update({self.tblDarsteller.item(reihe, 0).text():(self.tblDarsteller.item(reihe, 1).text(),self.tblDarsteller.item(reihe, 2).text(),self.tblDarsteller.item(reihe, 3).text())})
-        for reihe in range(self.tbl_INTDarsteller.rowCount() ):
-            tblINTDarstel.update({self.tbl_INTDarsteller.item(reihe, 0).text():(self.tbl_INTDarsteller.item(reihe, 1).text(),self.tbl_INTDarsteller.item(reihe, 2).text(),self.tbl_INTDarsteller.item(reihe, 3).text())})
-        for name, rolle_alias_art in tblINTDarstel.items():
-            if name not in tblDarstel:                
-                neue_Zeile=self.tblDarsteller.rowCount()+1
-                self.tblDarsteller.setRowCount(neue_Zeile)
-                self.tblDarsteller.setItem(neue_Zeile-1, 0,QtWidgets.QTableWidgetItem(name))                
-                self.tblDarsteller.setItem(neue_Zeile-1, 1,QtWidgets.QTableWidgetItem(rolle_alias_art[0]))
-                self.tblDarsteller.setItem(neue_Zeile-1, 2,QtWidgets.QTableWidgetItem(rolle_alias_art[1]))
-                self.tblDarsteller.setItem(neue_Zeile-1, 3,QtWidgets.QTableWidgetItem(rolle_alias_art[2]))                        
-        ### ------------------------------- Label Handlung --------------------------------------------- ###
-        Inhalt=""
-        if self.tbl_INTHandlung.rowCount()>0:
-            for reihe in range(self.tbl_INTHandlung.rowCount()):
-                Inhalt+="Szene "+str(reihe+1)+": "+self.tbl_INTHandlung.item(reihe, 3).text()+"\n"
-            self.lblHandlung.setText(Inhalt)
+        self.set_artist_list()                       
+        ### ------------------------------- Scene / Handlung --------------------------------------------- ###
+        self.set_scenen_list()  
         ### ------------------------------- Links ------------------------------------------------------ ###        
-        self.lblLinks.setText(self.lblLinks.text()+self.lnEdit_INTLinkEingabe.text()+"\n")
+        self.lblLinks.setText(f"{self.lblLinks.text()}{self.lnEdit_scrape_url.text()}\n")
         ### ------------------------------- Anzeige Titel-Fenster und Inhalt löschen ------------------- ###        
         self.stackedWidget.setCurrentIndex(0)
-        self.clear_INTFenster()        
-        self.Button_unsichtbar(False)
+        self.set_button_visible(True)
 
-    def nfoMaker(self):
-        ###------------------------ von Tabelle Darsteller in String umwandeln --------------------------###
-        Darsteller=self.Tabelle_Darsteller()
-        Auch_bekannt_Als=self.Tabelle_AKA()
-        Label="Regie             = "+self.lblRegie.text()+"\nLabel             = "+self.lblLabel.text()+"\nSerie             = "+self.lblSerie.text()+"\nErscheinungsdatum = "+self.lblDatum.text()
-        ###------------------------- nfo speichern und ins Movie Ordner schieben ------------------------###
-        with open(Path(__file__).absolute().parent /'nfo.txt', 'w+', encoding='utf-8') as AllItems:
-            Inhalt = self.lblTitel.text()+"\n"+"-"*len(self.lblTitel.text())+"\nAKA\n"+Auch_bekannt_Als+"\nLinks:\n"+self.lblLinks.text()+"\n\n"+Label+"\n"+self.lblnfoDaten.text()+"\nSprache           =\nLand              =\n\n"+Darsteller+"\nHandlung:\n"+self.lblHandlung.text()
-            #Inhalt.encode("ascii", "ignore")
-            AllItems.write(Inhalt)
-        source=Path(__file__).absolute().parent / 'nfo.txt'
-        destination=os.path.join(os.path.dirname(self.lbl_Datei.text()),"nfo.txt")                   
-        shutil.move(source, destination)
-        os.system("start notepad.exe "+destination)
+    def set_title(self): 
+        releasedate=self.lbl_INTDatum.text()
+        studio = self.lbl_INTLabel.text()
+        title: str = self.lbl_INTName.text()
+        if re.search(r'\((\d{4})\)$', title):
+           releasedate = self.lbl_INTName.text()[-6:]
+        title = title.replace(releasedate,"").strip()                                
+        self.lbl_movie_title.setText(f"{studio} - {title}{releasedate}FULLHD-ENGLISH")
+        return title
     
-    def nfoLoad(self):
-        destination=self.Info_Datei("nfo")
+    def set_regie(self):        
+        self.lbl_movie_regie.setText(self.lbl_INTRegie.text())            
+        return self.lbl_INTRegie.text()
+    
+    def set_studio(self):
+        self.lbl_movie_studio.setText(self.lbl_INTLabel.text())         
+        return self.lbl_INTLabel.text()
+    
+    def set_country(self):
+        for num in range(len(self.Land_CheckcBox)):            
+            if self.Land_CheckcBox.model().item(num, 0).text() == self.lbl_INTLand.text():
+                item = self.Land_CheckcBox.model().item(num, 0)
+                item.setCheckState(Qt.CheckState.Checked)
+    
+    def set_release_date(self):
+        self.lbl_movie_releasedate.setText(self.lbl_INTDatum.text())        
+        return self.lbl_INTDatum.text()
+    
+    def set_also_known_as(self):
+        table_also_known_as: dict = {}
+        table_also_known_as_from_web: dict={}
+        for row in range(self.tblAKA.rowCount()):
+            title = self.tblAKA.item(row, 0).text()
+            country_type = self.tblAKA.item(row, 1).text()
+            country = self.tblAKA.item(row, 2).text()            
+            also_known_as_dict = {title: (country_type, country)}
+            table_also_known_as.update(also_known_as_dict)        
+        for row in range(self.tbl_INTAKA.rowCount()):
+            title = self.tbl_INTAKA.item(row, 0).text()
+            country_type = self.tbl_INTAKA.item(row, 1).text()
+            country = self.tbl_INTAKA.item(row, 2).text()            
+            also_known_as_dict = {title: (country_type, country)}           
+            table_also_known_as_from_web.update(also_known_as_dict)        
+        for name, country_type in table_also_known_as_from_web.items():
+            if name not in table_also_known_as:
+                new_row = self.tblAKA.rowCount() + 1
+                self.tblAKA.setRowCount(new_row)
+                self.tblAKA.setItem(new_row-1, 0,QTableWidgetItem(name))                               
+                self.tblAKA.setItem(new_row-1, 1,QTableWidgetItem(country_type[0]))
+                self.tblAKA.setItem(new_row-1, 2,QTableWidgetItem(country_type[1]))
+
+    def set_artist_list(self):
+        table_artist: dict = {}
+        table_artist_from_web: dict={}
+        for row in range(self.tblDarsteller.rowCount()):
+            actor_name = self.tblDarsteller.item(row, 0).text()
+            actor_role_name = self.tblDarsteller.item(row, 1).text()
+            actor_alias = self.tblDarsteller.item(row, 2).text()
+            actor_type = self.tblDarsteller.item(row, 3).text()
+            actor_list = {actor_name: (actor_role_name, actor_alias, actor_type)}            
+            table_artist.update(actor_list)
+        for row in range(self.tbl_INTDarsteller.rowCount()):
+            actor_name = self.tbl_INTDarsteller.item(row, 0).text()
+            actor_role_name = self.tbl_INTDarsteller.item(row, 1).text() if self.tbl_INTDarsteller.item(row, 1) else ""
+            actor_alias = self.tbl_INTDarsteller.item(row, 2).text() if self.tbl_INTDarsteller.item(row, 2) else ""
+            actor_type = self.tbl_INTDarsteller.item(row, 3).text() if self.tbl_INTDarsteller.item(row, 3) else ""
+            actor_list = {actor_name: (actor_role_name, actor_alias, actor_type)} 
+            table_artist_from_web.update(actor_list)
+        for name, rolle_alias_type in table_artist_from_web.items():
+            if name not in table_artist:                
+                new_row = self.tblDarsteller.rowCount()+1
+                self.tblDarsteller.setRowCount(new_row)
+                self.tblDarsteller.setItem(new_row-1, 0,QTableWidgetItem(name))                
+                self.tblDarsteller.setItem(new_row-1, 1,QTableWidgetItem(rolle_alias_type[0]))
+                self.tblDarsteller.setItem(new_row-1, 2,QTableWidgetItem(rolle_alias_type[1]))
+                self.tblDarsteller.setItem(new_row-1, 3,QTableWidgetItem(rolle_alias_type[2])) 
+
+    def set_scenen_list(self):
+        scenen=""
+        if self.tbl_INTHandlung.rowCount() > 0:
+            for row in range(self.tbl_INTHandlung.rowCount()):
+                scenen += f"Szene {row+1}: {self.tbl_INTHandlung.item(row, 3).text()}\n"
+            self.lblHandlung.setText(scenen)  
+    
+    def nfo_maker(self):
+        ###------------------------ von Tabelle Darsteller in String umwandeln --------------------------###
+        actor = self.artists_table()
+        also_know_as = self.set_also_know_as_in_table()
+        label=f"{'Regie':18}= {self.lbl_movie_regie.text()}\n" \
+              f"{'Label':18}= {self.lbl_movie_studio.text()}\n" \
+              f"{'Serie':18}= {self.lbl_movie_serie.text()}\n" \
+              f"{'Erscheinungsdatum':18}= {self.lbl_movie_releasedate.text()}"
+        ###------------------------- nfo speichern und ins Movie Ordner schieben ------------------------###
+        with open(Path(__file__).absolute().parent /'nfo.txt', 'w+', encoding='utf-8') as nfo_items:
+            nfo_items.write(self.get_nfo_format(label, also_know_as, actor))
+
+        destination_folder = Path(self.lbl_movie_file.text())
+        source = Path(__file__).parent / 'nfo.txt'
+        destination = destination_folder.parent / 'nfo.txt'                  
+        shutil.move(source, destination)
+        os.system(f"start notepad.exe {destination}")
+
+    def get_nfo_format(self, label, also_know_as, actor):
+        title = self.lbl_movie_title.text()
+        return  f"{title}\n{'-'*len(title)}\n" \
+                f"AKA:\n{also_know_as}\n" \
+                f"Links:\n{self.lblLinks.text()}\n\n" \
+                f"{label}\n{self.lblnfoDaten.text()}\n" \
+                f"{'Sprache':18}= englisch\n" \
+                f"{'Land':18}= USA\n\n" \
+                f"{actor}\n" \
+                f"Handlung:\n{self.lblHandlung.text()}"
+
+    
+    def nfo_file_load(self):
+        destination = self.get_file_datas("nfo")
         try: 
             with open(destination,'r') as file:
                 nfo = file.read().split("\n")
-            Titel=nfo[0];akas=[]
-            print("Titel: %s\n" % Titel)
+            movie_title = nfo[0]
+            also_know_as: list=[]
+            
             if nfo[2]=="AKA":
                 for index in range(2,len(nfo)):
                     if nfo[index]=="Links:":                                        
                         for i in range(3,index):                                                
-                            if nfo[i].strip()!="":akas.append(nfo[i].strip())
-                print("AKAs: %s\n" % akas)
+                            if nfo[i].strip()!="":also_know_as.append(nfo[i].strip())
+                print(f"AKAs: {also_know_as}\n")
         except:
             print("keine Datei gefunden")
 
-    def Info_Datei_Laden(self):
-        self.DateiLaden(self.Info_Datei("Video"))
+    def get_file_datas_Laden(self):
+        self.files_load(self.get_file_datas("Video"))
+        
 
-    def Tabelle_AKA(self):
-        AlsoKnownAs="";Art="";Land_AKA=""
-        for reihe in range(self.tblAKA.rowCount()):
-            AKA_Titel =self.tblAKA.item(reihe, 0).text()            
-            if self.tblAKA.item(reihe, 1).text()!="":
-                Art="Titel in "+self.tblAKA.item(reihe, 1).text()            
-            if self.tblAKA.item(reihe, 2).text()!="":
-                Land_AKA=self.tblAKA.item(reihe, 2).text()+": "   
-            AlsoKnownAs+=Art+Land_AKA+AKA_Titel+"\n" 
-        return AlsoKnownAs
+    def set_also_know_as_in_table(self):
+        also_known_as:str="" 
+        for row in range(self.tblAKA.rowCount()):
+            also_known_as += self.build_aka_string(row) 
+        return also_known_as
+    
+    def build_aka_string(self, row):
+        title_alias = self.tblAKA.item(row, 0).text()
+        title_type = f"Titel in {self.tblAKA.item(row, 1).text()}" if self.tblAKA.item(row, 1).text() else ""
+        country_prefix = f"{self.tblAKA.item(row, 2).text()}: " if self.tblAKA.item(row, 2).text() else ""
 
-    def Tabelle_Darsteller(self):        
-        Zelle=[0,0,0,0];a=""        
-        for spalte in range(4):
-            for reihe in range(self.tblDarsteller.rowCount()):                                            
-                if len(self.tblDarsteller.item(reihe, spalte).text())>Zelle[spalte]:
-                    Zelle[spalte]=len(self.tblDarsteller.item(reihe, spalte).text()) 
-        a+="╔"+"═"*(Zelle[0]+Zelle[1]+Zelle[2]+Zelle[3]+11)+"╗\n"
-        a+="║ Darsteller:"+" "*(Zelle[0]+Zelle[1]+Zelle[2]+Zelle[3]-2)+" ║\n"
-        z1="╦";z2=z1;za1=" ║ ";za2=za1;zb1="╩";zb2=zb1
-        if Zelle[1]==0:z1="═";za1="  ";zb1="═"        
-        if Zelle[2]==0:z2="═";za2="   ";zb2="═"        
-        a+="╠"+"═"*(Zelle[0]+2)+"╦"+"═"*(Zelle[1]+2)+z1+"═"*(Zelle[2]+2)+z2+"═"*(Zelle[3]+2)+"╣\n"
-        for reihe in range(self.tblDarsteller.rowCount()):
-            name=self.tblDarsteller.item(reihe, 0).text()
-            rollenname=self.tblDarsteller.item(reihe, 1).text()
-            Alias=self.tblDarsteller.item(reihe, 2).text()
-            Art=self.tblDarsteller.item(reihe, 3).text()
-            a+="║ "+name+" "*(Zelle[0]-len(name))+" ║ "+rollenname+" "*(Zelle[1]-len(rollenname))+za1+Alias+" "*(Zelle[2]-len(Alias))+za2+Art+" "*(Zelle[3]-len(Art))+"  ║\n"            
-        a+="╚"+"═"*(Zelle[0]+2)+"╩"+"═"*(Zelle[1]+2)+zb1+"═"*(Zelle[2]+2)+zb2+"═"*(Zelle[3]+2)+"╝\n"
-        return a
+        return f"{title_type}{country_prefix}{title_alias}"
+
+    def artists_table(self):
+
+        headers = ["Darsteller", "Rollenname", "Alias", "Art"]
+        widths = [0, 0, 0, 0]
+
+        for col, header in enumerate(headers):
+            widths[col] = len(header)
+            for row in range(self.tblDarsteller.rowCount()):
+                cell = self.tblDarsteller.item(row, col).text()
+                widths[col] = max(widths[col], len(cell))
+
+        table = f"╔{'═' * (sum(widths) + 11)}╗\n"
+        table += f"║ {'Darsteller':{sum(widths)+ 9}} ║\n╠"
+
+        for col, width in enumerate(widths):
+            if col > 0:
+                table += "╦" if width > 0 else "═"
+            table += f"{'═' * (width + 2)}"
+        
+        table += "╣\n"
+        
+        for row in range(self.tblDarsteller.rowCount()):
+            for col, width in enumerate(widths):
+                cell = self.tblDarsteller.item(row, col).text()
+                table += f"║ {cell:>{width}} "
+            table += "║\n"
+        table += "╚"
+        for col, width in enumerate(widths):
+            if col > 0:
+                table += "╩" if width > 0 else "═"
+            table += f"{'═' * (width + 2)}"
+
+        return f"{table}╝"
 
     def CopyClipboard_InfoDatei(self):
-        pyperclip.copy(self.lblTiteltext())
+        pyperclip.copy(self.lbl_movie_title.text())
     def CopyClipboard_InfoDaten(self):
         pyperclip.copy(self.lblnfoDaten.text())
     def CopyClipboard_InfoAKA(self):
-        Auch_bekannt_Als=self.Tabelle_AKA()
-        pyperclip.copy(Auch_bekannt_Als+"\nLinks:\n"+self.lblLinks.text()+"\n\n"+self.lblLabel.text())
+        also_known_as=self.set_also_know_as_in_table()
+        pyperclip.copy(f"{also_known_as}\n" \
+                       f"Links:\n{self.lblLinks.text()}\n\n" \
+                       f"{self.lbl_movie_studio.text()}"    )
     def CopyClipboard_InfoDarsteller(self):
-        a=self.Tabelle_Darsteller()
-        pyperclip.copy("\n"+a+"\nHandlung:\n"+self.lblHandlung.text())
+        artists_in_table=self.artists_table()
+        pyperclip.copy(f"\n{artists_in_table}\n" \
+                       f"Handlung:\n{self.lblHandlung.text()}")
 
 
 
 # Abschluss
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     MainWindow = Haupt_Fenster() 
     MainWindow.show()   
-    sys.exit(app.exec_())
+    app.exec()
